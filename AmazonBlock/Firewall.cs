@@ -65,6 +65,7 @@ namespace AmazonBlock
                 var Rules = Policy.Rules.Cast<INetFwRule2>().Select(m => m.Name).ToArray();
                 for (var i = 0; i < Rules.Count(m => m == Key); i++)
                 {
+                    Console.Error.Write('.');
                     Policy.Rules.Remove(Key);
                 }
             }
