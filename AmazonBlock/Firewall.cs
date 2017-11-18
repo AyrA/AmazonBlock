@@ -51,13 +51,13 @@ namespace AmazonBlock
         /// </summary>
         /// <param name="CountryCode">Country</param>
         /// <param name="D">Direction to Unblock</param>
-        public static void UnblockAmazon(AmazonJson Addr, Direction D = Direction.Both)
+        public static void UnblockAmazon(Direction D = Direction.Both)
         {
             var Policy = GetPolicy();
             if (D == Direction.Both)
             {
-                UnblockAmazon(Addr, Direction.In);
-                UnblockAmazon(Addr, Direction.Out);
+                UnblockAmazon(Direction.In);
+                UnblockAmazon(Direction.Out);
             }
             else
             {
@@ -86,7 +86,7 @@ namespace AmazonBlock
             }
             else
             {
-                UnblockAmazon(Addr, D);
+                UnblockAmazon(D);
                 IpBlock(Addr.prefixes.Select(m => m.ip_prefix).ToArray(), D);
                 IpBlock(Addr.ipv6_prefixes.Select(m => m.ipv6_prefix).ToArray(), D);
             }
