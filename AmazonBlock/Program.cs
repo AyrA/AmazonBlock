@@ -74,9 +74,17 @@ namespace AmazonBlock
                     Console.Error.WriteLine("Taking JSON from Cache");
                 }
                 JSON = JsonConvert.DeserializeObject<AmazonJson>(File.ReadAllText(CacheFile));
-                Console.Error.WriteLine("Processing Addresses");
-                var Dir = args.Any(m => m.ToLower() == "/i") ? Firewall.Direction.In : Firewall.Direction.Out;
+                Console.Error.WriteLine("Blocking Amazon");
 
+                Firewall.Direction Dir = 0;
+                if (args.Any(m => m.ToLower() == "/i"))
+                {
+                    Dir |= Firewall.Direction.In;
+                }
+                if (args.Any(m => m.ToLower() == "/o"))
+                {
+                    Dir |= Firewall.Direction.Out;
+                }
                 Firewall.BlockAmazon(JSON, Dir);
             }
             else
