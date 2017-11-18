@@ -2,6 +2,8 @@
 
 Blocks the entire Network of Amazon.
 
+The inbound direction is useful to block a huge number of possibly unwanted and automated requests if you run a service.
+
 This application is a variant of [CountryBlock](https://github.com/AyrA/CountryBlock)
 and behaves similar, but has a simpler command line usage.
 
