@@ -39,9 +39,10 @@ namespace AmazonBlock
         static void Main(string[] args)
         {
 #if DEBUG
-            args = new string[] { "/I", "/L" };
+            args = new string[] { "/I" };
 #endif
-            var Output = args.Any(m => m.ToLower() == "/l") ? File.AppendText("out.log") : (StreamWriter)Console.Error;
+            var Output = args.Any(m => m.ToLower() == "/l") ? File.AppendText("out.log") : new StreamWriter(Console.OpenStandardError());
+            Output.AutoFlush = true;
             if (args.Contains("/?"))
             {
                 Help();
