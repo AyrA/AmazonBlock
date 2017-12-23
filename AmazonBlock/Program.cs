@@ -38,7 +38,11 @@ namespace AmazonBlock
 
         static void Main(string[] args)
         {
-            if (args.Length > 0 && args.Contains("/?"))
+#if DEBUG
+            args = new string[] { "/I", "/L" };
+#endif
+            var Output = args.Any(m => m.ToLower() == "/l") ? File.AppendText("out.log") : (StreamWriter)Console.Error;
+            if (args.Contains("/?"))
             {
                 Help();
             }
@@ -47,7 +51,7 @@ namespace AmazonBlock
                 AmazonJson JSON;
                 if (!File.Exists(CacheFile) || DateTime.UtcNow.Subtract(File.GetLastWriteTimeUtc(CacheFile)).TotalHours >= CACHE_MAX_HOURS)
                 {
-                    Console.Error.WriteLine("Downloading Addresses");
+                    Output.WriteLine("Downloading Addresses");
                     using (var WC = new WebClient())
                     {
                         try
@@ -57,10 +61,10 @@ namespace AmazonBlock
                         }
                         catch (Exception ex)
                         {
-                            Console.Error.WriteLine("Unable to download JSON: {0}", ex.Message);
+                            Output.WriteLine("Unable to download JSON: {0}", ex.Message);
                             if (File.Exists(CacheFile))
                             {
-                                Console.Error.WriteLine("Attempting to use old Cache File");
+                                Output.WriteLine("Attempting to use old Cache File");
                             }
                             else
                             {
@@ -71,30 +75,32 @@ namespace AmazonBlock
                 }
                 else
                 {
-                    Console.Error.WriteLine("Taking JSON from Cache");
+                    Output.WriteLine("Taking JSON from Cache");
                 }
                 JSON = JsonConvert.DeserializeObject<AmazonJson>(File.ReadAllText(CacheFile));
-                Console.Error.WriteLine("Blocking Amazon");
+                Output.WriteLine("Blocking Amazon");
 
                 Firewall.Direction Dir = 0;
                 if (args.Any(m => m.ToLower() == "/i"))
                 {
+                    Output.WriteLine("Inbound selected");
                     Dir |= Firewall.Direction.In;
                 }
                 if (args.Any(m => m.ToLower() == "/o"))
                 {
+                    Output.WriteLine("Outbound Selected");
                     Dir |= Firewall.Direction.Out;
                 }
                 Firewall.BlockAmazon(JSON, Dir);
             }
             else
             {
-                Console.Error.WriteLine("Unblocking Amazon");
+                Output.WriteLine("Unblocking Amazon");
                 //Just unblock all Amazone Addresses
                 Firewall.UnblockAmazon();
             }
 #if DEBUG
-            Console.Error.WriteLine("#END");
+            Output.WriteLine("#END");
             Console.ReadKey(true);
 #endif
         }
